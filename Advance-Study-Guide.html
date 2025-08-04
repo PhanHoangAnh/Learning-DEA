@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redshift Interactive Study Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        h2 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1e3a8a; /* blue-900 */
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #93c5fd; /* blue-300 */
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700;
+            color: #1e40af; /* blue-800 */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        h4 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700;
+            color: #1d4ed8; /* blue-700 */
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .tutorial-content p {
+            margin-bottom: 1rem;
+            line-height: 1.75;
+            color: #334155; /* slate-700 */
+        }
+        .tutorial-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #334155;
+        }
+        .tutorial-content code {
+            background-color: #e2e8f0; /* slate-200 */
+            color: #1e293b; /* slate-800 */
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+        .quiz-option {
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .quiz-option.correct {
+            background-color: #dcfce7; /* green-100 */
+            border-color: #22c55e; /* green-500 */
+            color: #15803d; /* green-700 */
+        }
+        .quiz-option.incorrect {
+            background-color: #fee2e2; /* red-100 */
+            border-color: #ef4444; /* red-500 */
+            color: #b91c1c; /* red-700 */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-blue-900 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-4xl font-bold tracking-tight">Redshift Interactive Study Guide</h1>
+            <p class="mt-1 text-blue-200">Advanced Performance Tuning Tutorial & Quiz</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- Tutorial Section -->
+        <section id="tutorial" class="bg-white p-8 rounded-lg shadow-md mb-12">
+            <h2 id="tutorial-title">Advanced Performance Tuning Tutorial</h2>
+            <div class="tutorial-content">
+                <p>This guide covers the advanced performance tuning concepts you'll need to optimize a real-world Redshift data warehouse. We will focus on the specific topics from the last quiz: Distribution Styles, Sort Keys, Materialized Views, and basic query plan analysis.</p>
+
+                <h3 id="dist-styles">1. Mastering Distribution Styles for Joins</h3>
+                <p>Choosing the right <code>DISTSTYLE</code> is the single most important factor for join performance. The goal is always to minimize data redistribution—the slow process of moving data between nodes over the network.</p>
+
+                <h4>Scenario 1: Joining Two Massive Tables</h4>
+                <ul>
+                    <li><strong>Problem:</strong> You have a 10-billion-row <code>clicks</code> table and a 5-billion-row <code>conversions</code> table, and you frequently join them on <code>session_id</code>.</li>
+                    <li><strong>Wrong Approach:</strong> <code>DISTSTYLE EVEN</code> on both. This would scatter both tables randomly, forcing Redshift to redistribute massive amounts of data to perform the join.</li>
+                    <li><strong>Optimal Solution:</strong> <code>DISTSTYLE KEY (session_id)</code> on <strong>both</strong> tables.
+                        <br><em>Why it works:</em> This strategy guarantees that all rows for the same <code>session_id</code> from both tables are physically stored on the same slice. The join becomes a local operation on each slice with zero data movement, which is incredibly fast.
+                    </li>
+                </ul>
+
+                <h4>Scenario 2: Joining a Massive Table and a Small Table</h4>
+                 <ul>
+                    <li><strong>Problem:</strong> You have a 10-billion-row <code>events</code> table and a 200-row <code>country_codes</code> table, joined on <code>country_code</code>.</li>
+                    <li><strong>Wrong Approach:</strong> <code>DISTSTYLE KEY</code> on both. While this works, there's a better way.</li>
+                    <li><strong>Optimal Solution:</strong> <code>DISTSTYLE KEY (country_code)</code> on the large <code>events</code> table and <code>DISTSTYLE ALL</code> on the small <code>country_codes</code> table.
+                        <br><em>Why it works:</em> <code>DISTSTYLE ALL</code> places a complete copy of the small table on every single compute node. This ensures that no matter how the large <code>events</code> table is distributed, the join will always be co-located and require no data movement. This is the standard best practice for small dimension tables.
+                    </li>
+                </ul>
+
+                <h4>Scenario 3: A Large Standalone Table</h4>
+                <ul>
+                    <li><strong>Problem:</strong> You have a massive log table that is analyzed on its own but is almost never joined to other tables.</li>
+                    <li><strong>Optimal Solution:</strong> <code>DISTSTYLE EVEN</code>.
+                        <br><em>Why it works:</em> Since there's no join key to optimize for, the primary goal is to ensure the data and the workload are spread perfectly evenly across all slices. <code>DISTSTYLE EVEN</code> does this by distributing rows in a round-robin fashion.
+                    </li>
+                </ul>
+
+                <h3 id="sort-keys">2. Advanced Sort Key Strategy</h3>
+                <p>A <code>SORTKEY</code> physically orders data on disk, allowing Redshift to skip massive blocks of data.</p>
+                <h4>Compound Sort Keys and Column Order</h4>
+                <p>A <strong>Compound Sort Key</strong> is like a multi-level filing system. The order of the columns is critical.</p>
+                <ul>
+                    <li><strong>Rule:</strong> The query optimizer can only effectively use the sort key to filter data if the <code>WHERE</code> clause includes the <strong>prefix</strong> (the first column) of the sort key.</li>
+                    <li><strong>Example:</strong> Your table is defined with <code>COMPOUND SORTKEY (region, country)</code>. A query with <code>WHERE region = 'Asia'</code> will be very fast. A query with <code>WHERE country = 'Vietnam'</code> will be slow because it has to scan all regions.</li>
+                </ul>
+                <h4>Maintenance: <code>VACUUM</code> after Data Loads</h4>
+                <ul>
+                    <li><strong>Problem:</strong> When you <code>COPY</code> new data into a table, it's stored in a separate, unsorted region. Over time, this makes your <code>SORTKEY</code> less effective, and queries become slower.</li>
+                    <li><strong>Solution:</strong> Run the <code>VACUUM</code> command. It merges the new, unsorted data and re-sorts the entire table according to its <code>SORTKEY</code>.</li>
+                </ul>
+
+                <h3 id="mvs">3. Effective Use of Materialized Views</h3>
+                <p>Materialized Views store the pre-computed results of a query. They are a powerful tool, but must be used correctly.</p>
+                <h4>When to Use Them vs. When NOT to Use Them</h4>
+                <ul>
+                    <li><strong>Use for:</strong> Predictable, recurring, and complex queries, like those that power a BI dashboard.</li>
+                    <li><strong>Do NOT use for:</strong> Ad-hoc, exploratory queries that change constantly, as you can't pre-compute a result you don't know ahead of time.</li>
+                </ul>
+                <h4>Lifecycle: The <code>REFRESH</code> Command</h4>
+                <p>A Materialized View is a static snapshot. It does not update automatically. You must explicitly run <code>REFRESH MATERIALIZED VIEW my_view;</code> to update its data, otherwise it will serve stale results.</p>
+                <h4>Strategy: Materialize the Base, Not the Final Product</h4>
+                <ul>
+                    <li><strong>Problem:</strong> A dashboard has three charts, all using slightly different aggregations from the same complex join.</li>
+                    <li><strong>Wrong Approach:</strong> Creating three separate materialized views. This runs the expensive join three times.</li>
+                    <li><strong>Optimal Solution:</strong> Create <strong>one</strong> materialized view that performs the expensive join. Then, the three fast, simple queries for the charts can all run against that small, pre-computed result.</li>
+                </ul>
+
+                <h3 id="explain">4. Reading an `EXPLAIN` Plan</h3>
+                <p>The <code>EXPLAIN</code> command shows you Redshift's query execution plan. Understanding it is key to finding bottlenecks.</p>
+                <ul>
+                    <li><strong>Data Redistribution Steps:</strong> Look for steps that start with <code>DS_</code>. These indicate data is being moved across the network.</li>
+                    <li><strong><code>DS_DIST_ALL_INNER</code>:</strong> This is a major red flag on large tables. It means the query planner decided to broadcast (send a full copy of) the entire inner table to all nodes to perform a join. This is extremely slow and indicates your distribution styles are likely incorrect for this query.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="bg-white p-8 rounded-lg shadow-md">
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container">
+                <div id="quiz-start-screen">
+                    <p class="text-lg mb-4">Ready to test your understanding of Redshift performance tuning? The quiz contains 20 questions drawn from the material above and general Redshift concepts. Questions and answers are shuffled each time.</p>
+                    <button id="start-quiz-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Start Quiz</button>
+                </div>
+                <div id="quiz-question-screen" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <p id="question-progress" class="text-sm font-semibold text-slate-500"></p>
+                        <p id="quiz-score" class="text-sm font-semibold text-slate-500"></p>
+                    </div>
+                    <p id="question-text" class="text-xl font-semibold mb-2"></p>
+                    <p id="question-hint" class="text-sm text-slate-500 mb-6"></p>
+                    <div id="answer-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <button id="next-question-btn" class="hidden mt-6 w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Next Question</button>
+                </div>
+                <div id="quiz-results-screen" class="hidden text-center">
+                    <h3 class="text-2xl font-bold">Quiz Complete!</h3>
+                    <p class="text-5xl font-bold my-4" id="final-score"></p>
+                    <button id="restart-quiz-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Try Again</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizData = [
+                // Quiz 1 Questions
+                { question: "A company needs to analyze five years of sales data to identify quarterly trends. The queries are complex and involve large aggregations. Which AWS service is designed specifically for this type of OLAP workload?", hint: "Consider the difference between databases designed for frequent, small transactions versus those designed for large, complex analytical queries.", options: [{ text: "Amazon RDS for PostgreSQL", isCorrect: false }, { text: "Amazon DynamoDB", isCorrect: false }, { text: "Amazon Redshift", isCorrect: true }, { text: "Amazon S3", isCorrect: false }] },
+                { question: "In the Redshift cluster architecture, which component is responsible for parsing an incoming SQL query, developing an execution plan, and coordinating the parallel work among the other nodes?", hint: "Think about the hierarchy of a team. Who receives the project requirements and delegates the tasks to the workers?", options: [{ text: "Compute Node", isCorrect: false }, { text: "Slice", isCorrect: false }, { text: "Leader Node", isCorrect: true }, { text: "Redshift Spectrum", isCorrect: false }] },
+                { question: "What is the most efficient and recommended method for bulk-loading a large dataset into a Redshift table?", hint: "Redshift is highly optimized to load data in parallel from a specific, scalable AWS storage service.", options: [{ text: "Running thousands of individual INSERT statements.", isCorrect: false }, { text: "Using the COPY command from an Amazon S3 bucket.", isCorrect: true }, { text: "Loading data directly from an on-premises server.", isCorrect: false }, { text: "Using a federated query to pull data from another database.", isCorrect: false }] },
+                { question: "How does Redshift efficiently execute a query like `SELECT * FROM logs WHERE event_time > '2025-01-01'` on a petabyte-sized table without performing a full table scan?", hint: "Think about how you'd find a specific topic in a large, well-organized book. You wouldn't read every page; you'd use the index and chapter headings.", options: [{ text: "By using a materialized view for the logs table.", isCorrect: false }, { text: "By running the query on a Redshift Serverless environment.", isCorrect: false }, { text: "By using Zone Maps and a SORTKEY on `event_time`.", isCorrect: true }, { text: "By caching the entire table in the leader node's memory.", isCorrect: false }] },
+                { question: "After deleting millions of old records from a large table, a developer notices that the table still consumes the same amount of disk space. What command should be run to reclaim this space?", hint: "When you delete files on a computer, they often go to a 'Recycle Bin' or 'Trash' and still take up space until you empty it. This command is the Redshift equivalent.", options: [{ text: "REFRESH MATERIALIZED VIEW", isCorrect: false }, { text: "ANALYZE", isCorrect: false }, { text: "ALTER TABLE", isCorrect: false }, { text: "VACUUM DELETE ONLY", isCorrect: true }] },
+                { question: "A company wants to implement Redshift Data Sharing between its primary cluster in `us-east-1` and a reporting cluster in `eu-west-1`. What is a mandatory prerequisite for both clusters to enable this feature?", hint: "Data Sharing relies on a modern Redshift architecture that separates compute from storage.", options: [{ text: "Both clusters must be using the Redshift Serverless option.", isCorrect: false }, { text: "Both clusters must be using RA3 nodes.", isCorrect: true }, { text: "Both clusters must have Workload Management (WLM) disabled.", isCorrect: false }, { text: "Both clusters must have the exact same number of nodes.", isCorrect: false }] },
+                { question: "You need to maintain a full history of how customer addresses change over time in a `customers` table. When a customer moves, the old address must be preserved and queryable. What is the standard data warehousing methodology for this?", hint: "This modeling technique involves adding new rows for changes instead of overwriting old data, often using date columns to track the version.", options: [{ text: "Creating a new table for each month.", isCorrect: false }, { text: "Relying on daily Redshift snapshots.", isCorrect: false }, { text: "Implementing Slowly Changing Dimensions (SCD) Type 2.", isCorrect: true }, { text: "Using a Lambda UDF to store history in DynamoDB.", isCorrect: false }] },
+                { question: "A small startup has an intermittent need for data analytics. They run heavy queries for a few hours at the end of each month but have almost no usage otherwise. Which Redshift option would be the most cost-effective for this workload?", hint: "The key here is the variable and infrequent workload. The ideal solution would not charge for compute resources when they are not being used.", options: [{ text: "A large, provisioned RA3 cluster.", isCorrect: false }, { text: "Redshift Serverless", isCorrect: true }, { text: "A provisioned DC2 cluster.", isCorrect: false }, { text: "Using Redshift Spectrum exclusively.", isCorrect: false }] },
+                // Quiz 2 Questions
+                { question: "An analytics dashboard has three different charts, all powered by slightly different aggregations from the same complex query joining `clicks` and `conversions`. The dashboard is slow to load. What is the most effective way to optimize this?", hint: "Instead of running a similar heavy calculation three times, consider calculating the common base data once and storing it.", options: [{ text: "Create three separate Materialized Views, one for each chart.", isCorrect: false }, { text: "Create one Materialized View of the joined base data, then query it for each chart.", isCorrect: true }, { text: "Increase the cluster size using Elastic Resize.", isCorrect: false }, { text: "Use Redshift Data Sharing to create a consumer cluster for the dashboard.", isCorrect: false }] },
+                { question: "A query frequently filters a `transactions` table on `customer_id` and then sorts the results by `transaction_date`. Which SORTKEY definition would be most effective for this query?", hint: "The order of columns in a compound sort key matters. The key is most effective when your query filters on the prefix of the key.", options: [{ text: "SORTKEY (transaction_date)", isCorrect: false }, { text: "SORTKEY (transaction_date, customer_id)", isCorrect: false }, { text: "INTERLEAVED SORTKEY (customer_id, transaction_date)", isCorrect: false }, { text: "COMPOUND SORTKEY (customer_id, transaction_date)", isCorrect: true }] },
+                { question: "You have a massive event log table that is primarily analyzed by `session_id` to understand user journeys. This table is almost never joined to other large tables. What is the best distribution style for this table?", hint: "If a table isn't frequently joined on a specific key, distributing it based on that key might not provide a benefit over simply spreading the data evenly.", options: [{ text: "DISTSTYLE KEY (session_id)", isCorrect: false }, { text: "DISTSTYLE ALL", isCorrect: false }, { text: "DISTSTYLE EVEN", isCorrect: true }, { text: "DISTSTYLE AUTO", isCorrect: false }] },
+                { question: "A team created a materialized view to power their daily sales report. However, they complain that the report is showing yesterday's data, even though the underlying `sales` table was updated this morning. What is the most likely cause?", hint: "A materialized view is a physical snapshot of data at a point in time. It does not update itself automatically.", options: [{ text: "The materialized view needs to be dropped and recreated.", isCorrect: false }, { text: "There is a network issue preventing the view from accessing the base table.", isCorrect: false }, { text: "The materialized view has not been refreshed since the base table was updated.", isCorrect: true }, { text: "The user querying the view does not have the correct permissions on the base table.", isCorrect: false }] },
+                { question: "You see a `DS_DIST_ALL_INNER` step in an `EXPLAIN` plan for a query that joins two very large tables. What does this indicate about the query's performance?", hint: "The `DS_DIST` prefix indicates data redistribution. Consider what it means to redistribute an entire large table to all nodes.", options: [{ text: "The query is highly optimized because the join is co-located.", isCorrect: false }, { text: "The query is performing poorly because one of the large tables is being broadcast to all nodes.", isCorrect: true }, { text: "The query is efficient because it is using a SORTKEY to filter data.", isCorrect: false }, { text: "The query is using Redshift Spectrum to access data in S3.", isCorrect: false }] },
+                { question: "A table is defined with `SORTKEY (region, country)`. A query is run with the filter `WHERE country = 'Vietnam'`. How effectively will the sort key be used to prune data blocks?", hint: "A compound sort key is like a filing system sorted first by cabinet, then by folder. Can you efficiently find a specific folder if you don't know which cabinet it's in?", options: [{ text: "It will be fully effective, as `country` is part of the sort key.", isCorrect: false }, { text: "It will not be effective, as the query does not filter on the first column of the compound key.", isCorrect: true }, { text: "It will be partially effective, as Redshift can scan the zone maps for the second column.", isCorrect: false }, { text: "The effectiveness depends on the table's distribution style, not the sort key.", isCorrect: false }] },
+                { question: "In which scenario would creating a materialized view be a POOR choice for performance optimization?", hint: "Materialized views are ideal for predictable, recurring queries. Consider a workload that is the opposite of that.", options: [{ text: "A BI dashboard that is refreshed by hundreds of users every morning.", isCorrect: false }, { text: "A nightly ETL job that summarizes daily data into an aggregate table.", isCorrect: false }, { text: "An environment where data analysts run ad-hoc, exploratory queries that change constantly.", isCorrect: true }, { text: "A query that provides data for a critical, real-time alerting system.", isCorrect: false }] },
+                { question: "A data architect is designing a schema with a 10-billion-row `events` table and a 200-row `country_codes` table. The tables are frequently joined on `country_code`. What is the optimal distribution style for the small `country_codes` table?", hint: "For joins between a very large table and a very small one, you can avoid data movement entirely by placing a full copy of the small table everywhere it's needed.", options: [{ text: "DISTSTYLE EVEN", isCorrect: false }, { text: "DISTSTYLE KEY on `country_code`", isCorrect: false }, { text: "DISTSTYLE ALL", isCorrect: true }, { text: "DISTSTYLE AUTO", isCorrect: false }] },
+                { question: "After loading a large batch of new data into a table with a defined `SORTKEY`, analysts report that queries that filter on the sort key column are now slower. What command should be run to restore performance?", hint: "New data is stored in an unsorted region. This command is the housekeeping utility that re-sorts the entire table.", options: [{ text: "ANALYZE", isCorrect: false }, { text: "VACUUM", isCorrect: true }, { text: "CREATE TABLE AS (CTAS)", isCorrect: false }, { text: "REFRESH MATERIALIZED VIEW", isCorrect: false }] },
+                { question: "Two massive tables, `clicks` and `conversions` (both billions of rows), are frequently joined on `session_id`. What is the optimal distribution strategy to ensure the best join performance?", hint: "To avoid redistributing billions of rows across the network, you need to ensure that rows with the same `session_id` from both tables are physically stored on the same slice.", options: [{ text: "DISTSTYLE EVEN on both tables.", isCorrect: false }, { text: "DISTSTYLE ALL on both tables.", isCorrect: false }, { text: "DISTSTYLE KEY on `session_id` for both tables.", isCorrect: true }, { text: "DISTSTYLE KEY on `clicks` and DISTSTYLE EVEN on `conversions`.", isCorrect: false }] },
+                { question: "You have a large fact table (`sales`) and a smaller dimension table (`users`). You frequently join them on `user_id`. To achieve the best query performance, which distribution style should you apply?", hint: "The goal is to place the joining rows on the same physical slice to avoid moving data across the network during a join.", options: [{ text: "DISTSTYLE EVEN on both tables.", isCorrect: false }, { text: "DISTSTYLE ALL on the large `sales` table and DISTSTYLE KEY on the `users` table.", isCorrect: false }, { text: "DISTSTYLE KEY on `user_id` for the `sales` table and DISTSTYLE ALL for the `users` table.", isCorrect: true }, { text: "DISTSTYLE KEY on `user_id` for both tables.", isCorrect: false }] }
+            ];
+
+            const startScreen = document.getElementById('quiz-start-screen');
+            const questionScreen = document.getElementById('quiz-question-screen');
+            const resultsScreen = document.getElementById('quiz-results-screen');
+
+            const startBtn = document.getElementById('start-quiz-btn');
+            const nextBtn = document.getElementById('next-question-btn');
+            const restartBtn = document.getElementById('restart-quiz-btn');
+
+            const questionProgress = document.getElementById('question-progress');
+            const quizScoreEl = document.getElementById('quiz-score');
+            const questionText = document.getElementById('question-text');
+            const questionHint = document.getElementById('question-hint');
+            const answerOptionsContainer = document.getElementById('answer-options');
+            const finalScoreEl = document.getElementById('final-score');
+
+            let shuffledQuestions = [];
+            let currentQuestionIndex = 0;
+            let score = 0;
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            function startQuiz() {
+                startScreen.classList.add('hidden');
+                resultsScreen.classList.add('hidden');
+                questionScreen.classList.remove('hidden');
+
+                shuffledQuestions = [...quizData];
+                shuffleArray(shuffledQuestions);
+                currentQuestionIndex = 0;
+                score = 0;
+                
+                displayQuestion();
+            }
+
+            function displayQuestion() {
+                resetState();
+                const currentQuestion = shuffledQuestions[currentQuestionIndex];
+                questionText.textContent = currentQuestion.question;
+                questionHint.textContent = `Hint: ${currentQuestion.hint}`;
+                questionProgress.textContent = `Question ${currentQuestionIndex + 1} of ${shuffledQuestions.length}`;
+                quizScoreEl.textContent = `Score: ${score}`;
+
+                const shuffledOptions = [...currentQuestion.options];
+                shuffleArray(shuffledOptions);
+
+                shuffledOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option.text;
+                    button.classList.add('quiz-option', 'w-full', 'p-4', 'text-left', 'border-2', 'border-slate-300', 'rounded-lg', 'hover:bg-blue-100', 'hover:border-blue-400');
+                    button.dataset.correct = option.isCorrect;
+                    button.addEventListener('click', selectAnswer);
+                    answerOptionsContainer.appendChild(button);
+                });
+            }
+            
+            function resetState() {
+                nextBtn.classList.add('hidden');
+                while (answerOptionsContainer.firstChild) {
+                    answerOptionsContainer.removeChild(answerOptionsContainer.firstChild);
+                }
+            }
+
+            function selectAnswer(e) {
+                const selectedBtn = e.target;
+                const isCorrect = selectedBtn.dataset.correct === 'true';
+
+                if (isCorrect) {
+                    score++;
+                    selectedBtn.classList.add('correct');
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                }
+
+                Array.from(answerOptionsContainer.children).forEach(button => {
+                    if (button.dataset.correct === 'true') {
+                        button.classList.add('correct');
+                    }
+                    button.disabled = true;
+                });
+                
+                quizScoreEl.textContent = `Score: ${score}`;
+                nextBtn.classList.remove('hidden');
+            }
+
+            function showNextQuestion() {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < shuffledQuestions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }
+
+            function showResults() {
+                questionScreen.classList.add('hidden');
+                resultsScreen.classList.remove('hidden');
+                finalScoreEl.textContent = `${score} / ${shuffledQuestions.length}`;
+            }
+
+            startBtn.addEventListener('click', startQuiz);
+            nextBtn.addEventListener('click', showNextQuestion);
+            restartBtn.addEventListener('click', startQuiz);
+        });
+    </script>
+
+</body>
+</html>
+
