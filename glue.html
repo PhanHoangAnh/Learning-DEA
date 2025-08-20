@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Glue: The Complete Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .quiz-option {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .quiz-option.correct {
+            background-color: #D1FAE5;
+            border-color: #10B981;
+        }
+        .quiz-option.incorrect {
+            background-color: #FEE2E2;
+            border-color: #EF4444;
+        }
+        .quiz-option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="bg-[#F0F4F8]">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#003B73] mb-2">Unlocking Data Insights with AWS Glue</h1>
+            <p class="text-lg text-[#0074D9]">Your guide to serverless data integration, ETL, and cataloging.</p>
+        </header>
+
+        <main class="space-y-12">
+            <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#003B73] mb-4 text-center">What is AWS Glue?</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">AWS Glue is a fully managed extract, transform, and load (ETL) service that makes it easy to prepare and load your data for analytics. It acts as the central "glue" connecting various data sources and services within the AWS ecosystem.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-[#BFD7ED] p-6 rounded-lg">
+                        <div class="text-5xl mb-2">📚</div>
+                        <h3 class="text-xl font-semibold text-[#003B73]">Centralized Data Catalog</h3>
+                        <p class="text-gray-700 mt-2">A unified metadata repository, compatible with Apache Hive, that all your services can use.</p>
+                    </div>
+                    <div class="bg-[#BFD7ED] p-6 rounded-lg">
+                        <div class="text-5xl mb-2">⚙️</div>
+                        <h3 class="text-xl font-semibold text-[#003B73]">Automated ETL Jobs</h3>
+                        <p class="text-gray-700 mt-2">Automatically generates Python or Scala code to transform and move your data, powered by Apache Spark.</p>
+                    </div>
+                    <div class="bg-[#BFD7ED] p-6 rounded-lg">
+                        <div class="text-5xl mb-2">💸</div>
+                        <h3 class="text-xl font-semibold text-[#003B73]">Serverless & Cost-Effective</h3>
+                        <p class="text-gray-700 mt-2">No infrastructure to manage. You only pay for the resources consumed while your jobs are running.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#003B73] mb-6 text-center">The Glue ETL Process Flow</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">Glue discovers your data, transforms it according to your business rules, and loads it into a target destination, making it ready for querying and analysis.</p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 w-full md:w-1/4">
+                        <div class="text-4xl mb-2">🔍</div>
+                        <h3 class="font-semibold text-[#003B73]">1. Discover</h3>
+                        <p class="text-sm text-gray-600">Glue Crawlers scan data sources (like S3) to infer schemas and populate the Data Catalog.</p>
+                    </div>
+                    <div class="text-4xl text-[#0074D9] transform md:rotate-0 rotate-90">→</div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 w-full md:w-1/4">
+                        <div class="text-4xl mb-2">🔄</div>
+                        <h3 class="font-semibold text-[#003B73]">2. Transform</h3>
+                        <p class="text-sm text-gray-600">ETL jobs run on Spark to clean, enrich, and restructure data using transformations.</p>
+                    </div>
+                    <div class="text-4xl text-[#0074D9] transform md:rotate-0 rotate-90">→</div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 w-full md:w-1/4">
+                        <div class="text-4xl mb-2">💾</div>
+                        <h3 class="font-semibold text-[#003B73]">3. Load</h3>
+                        <p class="text-sm text-gray-600">Transformed data is loaded into targets like Amazon S3, Redshift, or RDS.</p>
+                    </div>
+                     <div class="text-4xl text-[#0074D9] transform md:rotate-0 rotate-90">→</div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 w-full md:w-1/4">
+                        <div class="text-4xl mb-2">📊</div>
+                        <h3 class="font-semibold text-[#003B73]">4. Analyze</h3>
+                        <p class="text-sm text-gray-600">Data is ready for querying with services like Athena, Redshift Spectrum, and EMR.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#003B73] mb-6 text-center">The Glue Ecosystem: Key Players</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#003B73] mb-2 text-center">The Role of Apache Hive</h3>
+                        <p class="text-gray-600 mb-4 text-center">Hive acts as a data warehouse framework, allowing you to query massive datasets in S3 using a familiar SQL-like language (HiveQL) on Amazon EMR.</p>
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-center">
+                                    <div class="text-4xl">🧑‍💻</div>
+                                    <div class="font-semibold">EMR Cluster (Hive)</div>
+                                    <div class="text-xs">Query Engine</div>
+                                </div>
+                                <div class="text-2xl text-[#0074D9]">→</div>
+                                <div class="text-center">
+                                    <div class="text-4xl">📚</div>
+                                    <div class="font-semibold">Glue Data Catalog</div>
+                                    <div class="text-xs">Metastore (Blueprint)</div>
+                                </div>
+                                <div class="text-2xl text-[#0074D9]">→</div>
+                                <div class="text-center">
+                                    <div class="text-4xl">📦</div>
+                                    <div class="font-semibold">Amazon S3</div>
+                                    <div class="text-xs">Data Storage</div>
+                                </div>
+                            </div>
+                             <p class="text-sm text-gray-600 mt-4">For Hive to work, it needs a blueprint of the data. The **AWS Glue Data Catalog** provides this blueprint, acting as an external **metastore** that tells Hive the schema and location of the data in S3.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#003B73] mb-2 text-center">Apache Spark: The Engine of Glue</h3>
+                        <p class="text-gray-600 mb-4 text-center">While you interact with Glue, the high-performance **Apache Spark** engine is doing the heavy lifting behind the scenes on a serverless platform.</p>
+                         <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-center">
+                                    <div class="text-4xl">🎨</div>
+                                    <div class="font-semibold">AWS Glue Studio</div>
+                                    <div class="text-xs">User Interface</div>
+                                </div>
+                                <div class="text-2xl text-[#0074D9]">→</div>
+                                <div class="text-center">
+                                    <div class="text-4xl">📜</div>
+                                    <div class="font-semibold">PySpark/Scala Script</div>
+                                    <div class="text-xs">Generated Code</div>
+                                </div>
+                                <div class="text-2xl text-[#0074D9]">→</div>
+                                <div class="text-center">
+                                    <div class="text-4xl">⚙️</div>
+                                    <div class="font-semibold">Apache Spark Engine</div>
+                                    <div class="text-xs">Execution Platform</div>
+                                </div>
+                            </div>
+                             <p class="text-sm text-gray-600 mt-4">Glue translates your visual ETL design or custom script into optimized **PySpark or Scala code**. This code is then executed on the managed Spark environment, giving you the power of distributed processing without the complexity.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-2xl font-bold text-[#003B73] mb-4 text-center">Job Triggering Mechanisms</h3>
+                    <p class="text-center text-gray-600 mb-6">Glue provides flexible ways to run your ETL jobs, ensuring your data pipelines are both efficient and timely.</p>
+                    <div class="chart-container h-64 md:h-80">
+                        <canvas id="jobTriggersChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-2xl font-bold text-[#003B73] mb-4 text-center">Core Data Structure: DynamicFrame</h3>
+                     <p class="text-center text-gray-600 mb-6">Glue's unique data structure is built for the realities of messy data, offering flexibility where traditional structures fail.</p>
+                    <div class="flex flex-col justify-center h-full space-y-4">
+                        <div class="p-4 bg-[#E6F2FF] rounded-lg">
+                            <h4 class="font-bold text-[#003B73]">Self-Describing Records</h4>
+                            <p class="text-gray-700">Each record contains its own schema, allowing a single frame to handle rows with different structures.</p>
+                        </div>
+                        <div class="p-4 bg-[#E6F2FF] rounded-lg">
+                             <h4 class="font-bold text-[#003B73]">Handles Schema Evolution</h4>
+                             <p class="text-gray-700">Gracefully manages changes in source data, like new columns, without causing job failures.</p>
+                        </div>
+                         <div class="p-4 bg-[#E6F2FF] rounded-lg">
+                             <h4 class="font-bold text-[#003B73]">Built for ETL</h4>
+                             <p class="text-gray-700">Includes a rich set of built-in transformations designed specifically for data cleaning and preparation.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#003B73] mb-6 text-center">Advanced Transformations for Data Quality</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">Glue goes beyond basic ETL with powerful, built-in tools to solve complex data cleaning challenges automatically.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#003B73] mb-2">🤖 FindMatches: Smart Deduplication</h3>
+                        <p class="text-gray-600 mb-4">Uses Machine Learning to find and group records that are logically the same but not identical. Perfect for cleaning customer lists with minor variations in names or addresses.</p>
+                        <div class="chart-container h-72 md:h-80">
+                            <canvas id="findMatchesChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#003B73] mb-2">🤔 resolveChoice: Handling Ambiguity</h3>
+                        <p class="text-gray-600 mb-4">When a column has mixed data types (e.g., string and number), this transformation lets you decide how to resolve the conflict and standardize your data.</p>
+                        <div class="chart-container h-72 md:h-80">
+                            <canvas id="resolveChoiceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="quiz-section" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-[#003B73] mb-6 text-center">Test Your Knowledge</h2>
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button id="tab-quiz-1" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-[#0074D9] text-[#0074D9]">Quiz 1: Core Concepts</button>
+                        <button id="tab-quiz-2" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Quiz 2: Advanced Transformations</button>
+                    </nav>
+                </div>
+
+                <div id="panel-quiz-1" class="py-6">
+                </div>
+                <div id="panel-quiz-2" class="py-6 hidden">
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <script>
+        const quiz1Data = {
+            "questions": [{ "question": "An analytics team is using Apache Hive on Amazon EMR and wants to use a managed, central metadata repository. According to the tutorial, how can AWS Glue facilitate this?", "answerOptions": [{ "text": "By using the Glue Data Catalog as an external metastore for Hive.", "isCorrect": true, "rationale": "This aligns with Glue's role as a central, managed metadata repository that is compatible with Hive." }, { "text": "By converting all HiveQL queries into Python scripts automatically.", "isCorrect": false, "rationale": "While Glue can generate Python code for ETL jobs, its primary integration with Hive is not through query conversion." }, { "text": "By directly running Hive jobs on the Glue serverless Spark platform.", "isCorrect": false, "rationale": "Hive runs on an EMR cluster, whereas Glue has its own separate serverless Spark environment for its ETL jobs." }, { "text": "By requiring all data to be converted to the DynamicFrame format before Hive can access it.", "isCorrect": false, "rationale": "DynamicFrames are specific to Glue ETL jobs and are not a prerequisite for Hive to query data." }], "hint": "Think about the 'blueprint' or catalog that tells a query engine what data looks like and where it is." }, { "question": "A data engineer finds that a Glue ETL job is taking too long to complete. What is the primary resource they should adjust to improve performance?", "answerOptions": [{ "text": "The number of DynamicFrames.", "isCorrect": false, "rationale": "DynamicFrames are data structures, not a performance resource that can be scaled." }, { "text": "The IAM role permissions.", "isCorrect": false, "rationale": "IAM roles handle security and access, but they do not influence the processing capacity of a job." }, { "text": "The number of Data Processing Units (DPUs).", "isCorrect": true, "rationale": "DPUs directly correspond to the provisioned processing capacity for the underlying Spark cluster." }, { "text": "The CloudWatch logging level.", "isCorrect": false, "rationale": "CloudWatch is used for monitoring and error reporting, not for adjusting the job's performance." }], "hint": "This is the fundamental unit of processing power for a Glue job." }, { "question": "What is the key difference between an AWS Glue DynamicFrame and a standard Apache Spark DataFrame?", "answerOptions": [{ "text": "DynamicFrames can only be written in Scala, while DataFrames can be in Python or Scala.", "isCorrect": false, "rationale": "The tutorial states that Glue ETL, which uses DynamicFrames, can generate both Python and Scala code." }, { "text": "DynamicFrames are composed of self-describing DynamicRecords, making them flexible with schema.", "isCorrect": true, "rationale": "This flexibility is the core design principle of DynamicFrames, allowing them to handle evolving or inconsistent schemas gracefully." }, { "text": "DynamicFrames are stored in memory, while DataFrames are stored on disk in S3.", "isCorrect": false, "rationale": "Both are distributed data structures that operate on data which is typically stored in a distributed file system like S3." }, { "text": "DynamicFrames have built-in machine learning transformations, while DataFrames do not.", "isCorrect": false, "rationale": "While Glue provides ML transformations that operate on DynamicFrames, Spark DataFrames also have access to a rich ML library (MLlib)." }], "hint": "Consider how each structure handles schema and individual records." }, { "question": "A Glue ETL job processes customer data that contains duplicate entries with minor variations (e.g., 'St.' vs. 'Street'). Which bundled transformation is specifically designed to handle this issue?", "answerOptions": [{ "text": "Join", "isCorrect": false, "rationale": "A join combines data from two sources based on a common key, but it doesn't identify fuzzy matches within a single dataset." }, { "text": "Filter", "isCorrect": false, "rationale": "A filter is used to select or discard records based on specific criteria, not to identify non-exact duplicates." }, { "text": "Map", "isCorrect": false, "rationale": "A map operation transforms individual records but is not designed to compare records against each other to find duplicates." }, { "text": "FindMatches ML Transformation", "isCorrect": true, "rationale": "This ML-powered tool is built to identify matching records even when they lack a common identifier or have non-exact field matches." }], "hint": "This transformation uses a more advanced technique than simple filtering or joining to identify matches." }, { "question": "A dataset being processed by Glue has a 'cost' column that sometimes appears as a numeric double (e.g., 55.20) and sometimes as a string (e.g., '$55.20'). Which `resolveChoice` action would result in two new columns, `cost_double` and `cost_string`?", "answerOptions": [{ "text": "`cast:string`", "isCorrect": false, "rationale": "This would force all values in the 'cost' column to become strings, not create new columns." }, { "text": "`make_struct`", "isCorrect": false, "rationale": "This would create a single 'cost' column containing a structure with both the double and string versions inside it." }, { "text": "`make_cols`", "isCorrect": true, "rationale": "This action explicitly creates new columns for each unique data type found for an ambiguous field name." }, { "text": "`project:double`", "isCorrect": false, "rationale": "This would attempt to convert all values to the double data type, likely causing errors for the string values." }], "hint": "This action is designed to create new, distinct columns based on the different data types found." }, { "question": "In what programming languages can AWS Glue automatically generate ETL code?", "answerOptions": [{ "text": "Java and C++", "isCorrect": false, "rationale": "While used in big data, these are not the languages Glue uses for its auto-generated ETL scripts." }, { "text": "Python and Scala", "isCorrect": true, "rationale": "These are the two languages that run on the Apache Spark engine, which Glue uses to automatically generate its transformation scripts." }, { "text": "SQL and R", "isCorrect": false, "rationale": "SQL is used for querying, and R is popular in statistics, but Glue generates code for its Spark engine in other languages." }, { "text": "JavaScript and Go", "isCorrect": false, "rationale": "These languages are not used by the Apache Spark engine that powers Glue ETL jobs." }], "hint": "The tutorial mentions two languages popular in big data processing that are supported for code generation." }, { "question": "If a Glue ETL job fails, where are the error logs and metrics automatically sent for monitoring and alerting?", "answerOptions": [{ "text": "Amazon S3", "isCorrect": false, "rationale": "While S3 might be the source or destination for the data, it is not the primary service for monitoring job execution logs." }, { "text": "Amazon SNS", "isCorrect": false, "rationale": "SNS is used for sending notifications, but it gets its information from a different monitoring service." }, { "text": "The Glue Data Catalog", "isCorrect": false, "rationale": "The Data Catalog stores metadata about data sources, not runtime error logs from ETL jobs." }, { "text": "Amazon CloudWatch", "isCorrect": true, "rationale": "CloudWatch is the designated AWS service for collecting logs and metrics, which can then be used to trigger alerts (e.g., via SNS)." }], "hint": "This is AWS's central service for monitoring logs, metrics, and events across all services." }, { "question": "True or False: The integration between AWS Glue and a Hive Metastore is one-way only; you can only use the Glue Data Catalog as a metastore for Hive.", "answerOptions": [{ "text": "True", "isCorrect": false, "rationale": "The tutorial explicitly mentions that the integration works in both directions." }, { "text": "False", "isCorrect": true, "rationale": "The tutorial states you can go both ways: use Glue for Hive, or import an existing Hive metastore into Glue." }], "hint": "Consider the flexibility of the relationship between an existing Hive setup and a new Glue implementation." }, { "question": "What is the purpose of enabling 'job metrics' for a Glue ETL job?", "answerOptions": [{ "text": "To automatically generate Python or Scala code.", "isCorrect": false, "rationale": "Code generation is a separate feature from performance monitoring." }, { "text": "To determine the appropriate number of DPUs needed for the job.", "isCorrect": true, "rationale": "By analyzing metrics like 'maximum needed executors,' you can properly provision DPUs for optimal performance and cost." }, { "text": "To encrypt data both at rest and in transit.", "isCorrect": false, "rationale": "Encryption is a security feature configured separately from performance metrics." }, { "text": "To trigger the job automatically when new data arrives.", "isCorrect": false, "rationale": "Event-driven triggers are used for scheduling and automation, not for performance analysis." }], "hint": "This feature helps you understand the resource consumption of your job to make it more efficient." }, { "question": "A developer needs to remove several unnecessary columns from their dataset and also enrich it by combining it with a lookup table based on a user ID. Which two bundled transformations would be most appropriate?", "answerOptions": [{ "text": "Filter and FindMatches", "isCorrect": false, "rationale": "Filter selects rows, and FindMatches finds duplicates; neither is ideal for removing columns or combining with a lookup table." }, { "text": "Map and Join", "isCorrect": true, "rationale": "A Map transformation can be used to select/delete fields (columns), and a Join is the standard way to enrich data by combining it with another table." }, { "text": "Join and Drop Null Fields", "isCorrect": false, "rationale": "While Join is correct for enrichment, Drop Null Fields removes rows with empty data, not entire columns." }, { "text": "Format Conversion and Map", "isCorrect": false, "rationale": "Format Conversion changes the file type (e.g., CSV to Parquet), it does not combine datasets like a Join does." }], "hint": "One transformation is for reshaping individual records, and the other is for combining datasets." }]
+        };
+
+        const quiz2Data = {
+            "questions": [{ "question": "You are cleaning a dataset of user profiles. You suspect there are many duplicate entries, but they are not identical (e.g., 'John Smith' vs. 'J. Smith' and '123 Main St.' vs. '123 Main Street'). A simple `Map` or `Filter` won't work. Which Glue transformation is best suited for this task?", "answerOptions": [{ "text": "Join", "isCorrect": false, "rationale": "A Join is used to combine two different datasets based on a key, not to find duplicates within a single dataset." }, { "text": "resolveChoice", "isCorrect": false, "rationale": "This transformation is used for fixing columns with multiple data types, not for finding duplicate records." }, { "text": "FindMatches ML Transformation", "isCorrect": true, "rationale": "This transformation uses machine learning to identify logically equivalent records, making it ideal for deduplicating data with minor variations." }, { "text": "Format Conversion", "isCorrect": false, "rationale": "This is used to change the file format of the data (e.g., from JSON to Parquet), not to clean the content of the records." }], "hint": "This problem requires a transformation that can intelligently compare records to find 'fuzzy' matches, not just exact ones." }, { "question": "A DynamicFrame contains a 'status' column. Due to data entry errors, this column sometimes contains integers (1, 0) and sometimes strings ('true', 'false'). You want to standardize this column so that all values are strings. Which `resolveChoice` action should you use?", "answerOptions": [{ "text": "`make_cols`", "isCorrect": false, "rationale": "This would create two separate columns (`status_int` and `status_string`), which is not the goal of standardizing into one column." }, { "text": "`cast:string`", "isCorrect": true, "rationale": "This action is specifically designed to convert all values in the ambiguous column to the specified type, in this case, a string." }, { "text": "`make_struct`", "isCorrect": false, "rationale": "This would create a nested structure within the 'status' column, which complicates the schema rather than standardizing it." }, { "text": "`project:long`", "isCorrect": false, "rationale": "This would attempt to convert everything to a number, which would likely fail on the string values 'true' and 'false'." }], "hint": "Think about which action forces all values in a column into a single, uniform data type." }, { "question": "After running a `FindMatches` transformation, what is the primary output you work with?", "answerOptions": [{ "text": "A cleaned dataset with all duplicates automatically removed.", "isCorrect": false, "rationale": "FindMatches identifies duplicates but does not automatically delete them; it leaves the final decision on how to handle them to the developer." }, { "text": "A new DynamicFrame where each record has a 'match_id' field, grouping potential duplicates.", "isCorrect": true, "rationale": "The transformation adds a new field that assigns a common ID to all records it identifies as being part of the same duplicate group." }, { "text": "A separate report listing all the potential duplicate records found.", "isCorrect": false, "rationale": "The output is integrated directly into the dataset as a new column, not generated as an external report." }, { "text": "A boolean flag on each record indicating if it is a duplicate or not.", "isCorrect": false, "rationale": "It provides a grouping ID rather than a simple true/false flag, which is more useful for handling groups of more than two duplicates." }], "hint": "The transformation doesn't delete data; it identifies which records belong together." }, { "question": "You have a 'location' column in your DynamicFrame that contains both string-based zip codes ('90210') and integer-based zip codes (90210). You want to preserve both versions of the data in a single record but within a nested object. Which `resolveChoice` action accomplishes this?", "answerOptions": [{ "text": "`make_cols`", "isCorrect": false, "rationale": "This would create two top-level columns (`location_string`, `location_int`), not a single nested object." }, { "text": "`cast:string`", "isCorrect": false, "rationale": "This would convert all integer zip codes to strings, losing the original numeric type." }, { "text": "`make_struct`", "isCorrect": true, "rationale": "This action creates a single 'location' column that is a structure containing fields for each data type found, achieving the goal of a nested object." }, { "text": "`project:string`", "isCorrect": false, "rationale": "This would also convert all integer zip codes to strings, losing the original data type." }], "hint": "Consider which option is designed to group different data types together into a single, structured column." }, { "question": "True or False: The `FindMatches` transformation requires you to manually write and train a machine learning model before you can use it.", "answerOptions": [{ "text": "True", "isCorrect": false, "rationale": "The machine learning model is pre-built and managed by AWS; you only need to configure the transformation, not build the model yourself." }, { "text": "False", "isCorrect": true, "rationale": "FindMatches is a managed, bundled transformation. The underlying ML model is pre-trained and handled by AWS, making it easy to use out-of-the-box." }], "hint": "Think about whether Glue's transformations are designed to be ready-to-use or require extensive setup." }, { "question": "What is the primary problem that the `resolveChoice` method is designed to solve?", "answerOptions": [{ "text": "Slow job performance due to insufficient DPUs.", "isCorrect": false, "rationale": "Performance tuning is handled by adjusting DPUs, not by using a data transformation method." }, { "text": "Data that is in the wrong file format for analysis.", "isCorrect": false, "rationale": "Format issues are handled by the Format Conversion transformation, not resolveChoice." }, { "text": "Schema ambiguity where a single column has multiple data types.", "isCorrect": true, "rationale": "This method exists to handle the specific challenge of columns having inconsistent types, forcing the developer to make a 'choice' on how to resolve it." }, { "text": "Duplicate records with minor variations in the data.", "isCorrect": false, "rationale": "This is the problem that the FindMatches transformation is designed to solve." }], "hint": "The name of the method itself gives a clue about its purpose." }, { "question": "A Glue job ingests data where a 'product_id' column can be either a `long` or a `string`. The team decides they want to keep both versions but as separate, top-level columns named `product_id_long` and `product_id_string`. Which transformation and action should they use?", "answerOptions": [{ "text": "FindMatches", "isCorrect": false, "rationale": "FindMatches is for identifying duplicate records, not for handling data type issues." }, { "text": "Map", "isCorrect": false, "rationale": "While a complex Map function could potentially be written to do this, it is not the specific, built-in tool for this exact problem." }, { "text": "resolveChoice with the `make_struct` action", "isCorrect": false, "rationale": "This would create a single nested column, not two separate top-level columns as required." }, { "text": "resolveChoice with the `make_cols` action", "isCorrect": true, "rationale": "This is the exact purpose of the `make_cols` action: to resolve type ambiguity by creating new, distinct columns for each data type." }], "hint": "This requires a transformation that can handle type ambiguity and an action that splits the column based on type." }, { "question": "Which of the following is a key characteristic of the `FindMatches` ML Transformation?", "answerOptions": [{ "text": "It relies on exact key matching to join datasets.", "isCorrect": false, "rationale": "This describes a standard Join operation, whereas FindMatches works without exact keys." }, { "text": "It uses machine learning to find probabilistic matches.", "isCorrect": true, "rationale": "The 'ML' in its name signifies that it uses a learned model to find records that are likely duplicates, even if they are not identical." }, { "text": "It can only be used on data that has a perfectly consistent schema.", "isCorrect": false, "rationale": "Glue transformations, especially on DynamicFrames, are designed to work with data that may have inconsistent schemas." }, { "text": "It is primarily used for converting data from JSON to Parquet.", "isCorrect": false, "rationale": "This is the job of the Format Conversion transformation." }], "hint": "Consider what makes this transformation different from a standard, rule-based approach." }, { "question": "You use `resolveChoice` on a 'price' column with the action `cast:double`. What will happen to records where the price is a string like '$25.99'?", "answerOptions": [{ "text": "The record will be dropped from the DynamicFrame.", "isCorrect": false, "rationale": "Casting doesn't typically drop the entire record, but rather affects the value within the column." }, { "text": "The value in that column will become null.", "isCorrect": true, "rationale": "When a cast from a string containing non-numeric symbols to a numeric type fails, the resulting value is typically null." }, { "text": "Glue will automatically extract the number and convert it successfully.", "isCorrect": false, "rationale": "A simple cast operation is not smart enough to parse numbers out of a string with symbols; it requires an exact numeric format." }, { "text": "The job will fail with an error.", "isCorrect": false, "rationale": "Glue's DynamicFrames are designed to be resilient; a failed cast on some rows will result in null values rather than a complete job failure." }], "hint": "Consider what happens when you try to force a string that contains non-numeric characters into a numeric data type." }, { "question": "Why would a developer choose to use `FindMatches` instead of writing their own complex SQL query or Python script to find duplicates?", "answerOptions": [{ "text": "To reduce development time and leverage a pre-built, powerful ML model.", "isCorrect": true, "rationale": "Using a managed transformation saves significant effort compared to building, training, and maintaining a custom fuzzy-matching algorithm." }, { "text": "Because `FindMatches` is the only way to remove rows from a DynamicFrame.", "isCorrect": false, "rationale": "Rows can be removed using other transformations like Filter or DropNullFields." }, { "text": "To ensure the job runs faster than any other transformation.", "isCorrect": false, "rationale": "While powerful, an ML transformation can be computationally intensive and may not necessarily be the fastest option for all datasets." }, { "text": "Because `FindMatches` can also be used to join two separate tables.", "isCorrect": false, "rationale": "Its purpose is to find duplicates within a single dataset, not to perform joins between different datasets." }], "hint": "Think about the trade-off between using a managed service and building a custom solution." }]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            function wrapLabels(label, maxWidth) {
+                if (!label) return [''];
+                const words = label.split(' ');
+                let lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > maxWidth) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                });
+                lines.push(currentLine.trim());
+                return lines;
+            }
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+            
+            const brilliantBluesPalette = {
+                backgrounds: ['#0074D9', '#7FDBFF', '#39CCCC'],
+                borders: ['#0056a2', '#5cb7d9', '#2caaaa']
+            };
+
+            const energeticPlayfulPalette = {
+                backgrounds: ['#FF4136', '#FF851B', '#FFDC00', '#2ECC40'],
+                borders: ['#d9372d', '#d97016', '#d9bb00', '#27ad36']
+            };
+
+            new Chart(document.getElementById('jobTriggersChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Time-Based Schedule (Cron)', 'Job Bookmarks (New Data Only)', 'CloudWatch Events (On Success/Fail)'],
+                    datasets: [{ label: 'Use Case Distribution', data: [45, 35, 20], backgroundColor: brilliantBluesPalette.backgrounds, borderColor: brilliantBluesPalette.borders, borderWidth: 1 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { title: tooltipTitleCallback } } } }
+            });
+
+            new Chart(document.getElementById('findMatchesChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['Slightly Different Names', 'Address Variations (St. vs Street)', 'Missing Middle Initials', 'Typographical Errors'],
+                    datasets: [{ label: 'Common Use Cases', data: [30, 28, 22, 20], backgroundColor: energeticPlayfulPalette.backgrounds, borderColor: energeticPlayfulPalette.borders, borderWidth: 1 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { title: tooltipTitleCallback } } } }
+            });
+            
+            new Chart(document.getElementById('resolveChoiceChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['make_cols (Create New Columns)', 'cast (Force One Type)', 'make_struct (Create Nested Object)', 'project (Select Target Type)'].map(l => wrapLabels(l, 16)),
+                    datasets: [{ label: 'Resolution Strategy', data: [40, 30, 20, 10], backgroundColor: brilliantBluesPalette.backgrounds, borderColor: brilliantBluesPalette.borders, borderWidth: 1 }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Popularity (%)' } } } }
+            });
+
+            const quizState = {
+                quiz1: { currentIndex: 0, score: 0, data: quiz1Data },
+                quiz2: { currentIndex: 0, score: 0, data: quiz2Data }
+            };
+
+            const quizContainers = {
+                quiz1: document.getElementById('panel-quiz-1'),
+                quiz2: document.getElementById('panel-quiz-2')
+            };
+
+            const tabButtons = {
+                quiz1: document.getElementById('tab-quiz-1'),
+                quiz2: document.getElementById('tab-quiz-2')
+            };
+
+            function renderQuiz(quizKey) {
+                const state = quizState[quizKey];
+                const container = quizContainers[quizKey];
+                container.innerHTML = '';
+
+                const questionData = state.data.questions[state.currentIndex];
+                const isLastQuestion = state.currentIndex === state.data.questions.length - 1;
+
+                let content = `
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-gray-600">Question ${state.currentIndex + 1} of ${state.data.questions.length}</p>
+                        <p class="font-bold text-[#003B73]">Score: ${state.score} / ${state.data.questions.length}</p>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">${questionData.question}</h4>
+                    <p class="text-sm text-gray-500 italic mb-6">Hint: ${questionData.hint}</p>
+                    <div id="${quizKey}-options" class="space-y-3">
+                        ${questionData.answerOptions.map((opt, index) => `
+                            <div class="quiz-option border-2 border-gray-300 p-4 rounded-lg hover:bg-gray-100" data-index="${index}">
+                                ${opt.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="${quizKey}-rationale" class="mt-4 text-sm p-3 rounded-lg bg-gray-50 hidden"></div>
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <button id="${quizKey}-restart" class="py-2 px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">Restart Quiz</button>
+                        <button id="${quizKey}-next" class="py-2 px-4 bg-[#0074D9] text-white rounded-lg hover:bg-[#0056a2] transition-colors ${isLastQuestion ? 'hidden' : ''}">Next Question</button>
+                        <div id="${quizKey}-results" class="text-xl font-bold text-green-600 ${isLastQuestion ? 'hidden' : 'hidden'}"></div>
+                    </div>
+                `;
+                container.innerHTML = content;
+
+                document.getElementById(`${quizKey}-restart`).addEventListener('click', () => {
+                    state.currentIndex = 0;
+                    state.score = 0;
+                    renderQuiz(quizKey);
+                });
+
+                if (!isLastQuestion) {
+                    document.getElementById(`${quizKey}-next`).addEventListener('click', () => {
+                        state.currentIndex++;
+                        renderQuiz(quizKey);
+                    });
+                }
+
+                const optionsContainer = document.getElementById(`${quizKey}-options`);
+                optionsContainer.addEventListener('click', (e) => {
+                    const selectedOption = e.target.closest('.quiz-option');
+                    if (!selectedOption || optionsContainer.classList.contains('answered')) return;
+
+                    optionsContainer.classList.add('answered');
+                    const selectedIndex = parseInt(selectedOption.dataset.index);
+                    const isCorrect = questionData.answerOptions[selectedIndex].isCorrect;
+
+                    if (isCorrect) {
+                        state.score++;
+                    }
+                    
+                    selectedOption.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    if (!isCorrect) {
+                        const correctIndex = questionData.answerOptions.findIndex(opt => opt.isCorrect);
+                        optionsContainer.children[correctIndex].classList.add('correct');
+                    }
+                    
+                    const rationaleEl = document.getElementById(`${quizKey}-rationale`);
+                    rationaleEl.textContent = questionData.answerOptions[selectedIndex].rationale;
+                    rationaleEl.classList.remove('hidden');
+
+                    Array.from(optionsContainer.children).forEach(child => child.classList.add('disabled'));
+                    
+                    const scoreEl = document.querySelector(`#${quizKey}-container .font-bold`);
+                    if(scoreEl) scoreEl.textContent = `Score: ${state.score} / ${state.data.questions.length}`;
+
+                    if (state.currentIndex === state.data.questions.length - 1) {
+                        const resultsEl = document.getElementById(`${quizKey}-results`);
+                        resultsEl.textContent = `Final Score: ${state.score} / ${state.data.questions.length}!`;
+                        resultsEl.classList.remove('hidden');
+                        document.getElementById(`${quizKey}-next`).classList.add('hidden');
+                    }
+                });
+            }
+            
+            function setupQuiz(quizKey) {
+                renderQuiz(quizKey);
+            }
+
+            tabButtons.quiz1.addEventListener('click', () => {
+                tabButtons.quiz1.className = 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-[#0074D9] text-[#0074D9]';
+                tabButtons.quiz2.className = 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                quizContainers.quiz1.classList.remove('hidden');
+                quizContainers.quiz2.classList.add('hidden');
+            });
+
+            tabButtons.quiz2.addEventListener('click', () => {
+                tabButtons.quiz2.className = 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-[#0074D9] text-[#0074D9]';
+                tabButtons.quiz1.className = 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                quizContainers.quiz2.classList.remove('hidden');
+                quizContainers.quiz1.classList.add('hidden');
+            });
+
+            setupQuiz('quiz1');
+            setupQuiz('quiz2');
+        });
+    </script>
+</body>
+</html>
